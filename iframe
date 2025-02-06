@@ -1,0 +1,58 @@
+<iframe id="gameIframe" src="https://lms.kemlu.go.id/gamifikasi/KemenluBuild/2-bilateral/" width="100%" height="800" frameborder="0"></iframe>
+
+<script>
+    window.addEventListener('message', function(event) {
+        // Verifikasi origin untuk keamanan
+        if (event.origin !== 'https://lms.kemlu.go.id') {
+            return; // Abaikan pesan dari origin yang tidak dikenal
+        }
+
+        // Ambil data dari pesan (misalnya skor pengguna)
+        const data = event.data;
+
+        // Menambahkan alert untuk memeriksa data yang diterima
+        alert('Pesan diterima: ' + JSON.stringify(data)); // Menampilkan data yang diterima
+
+        // Pastikan data memiliki informasi yang diperlukan
+        if (data && data.score && data.userId) {
+            // Menambahkan alert untuk memastikan data ada
+            alert('Skor dan UserID ditemukan: Skor = ' + data.score + ', UserID = ' + data.userId);
+
+            // Kirim data ke server Moodle untuk disimpan
+            submitScoreToMoodle(data.userId, data.score);
+        } else {
+            alert('Data tidak lengkap atau tidak valid: ' + JSON.stringify(data)); // Menampilkan data yang tidak valid
+        }
+    }, false);
+
+    function submitScoreToMoodle(userId, score) {
+        const token = 'YOUR_MOODLE_API_TOKEN'; // Ganti dengan token API Moodle Anda
+        const siteUrl = 'https://yourmoodlesite.com/webservice/rest/server.php'; // Ganti dengan URL situs Moodle Anda
+
+        // Menambahkan alert untuk memastikan fungsi ini dipanggil
+        alert('Mengirimkan skor ke Moodle: UserID = ' + userId + ', Skor = ' + score);
+
+        fetch(siteUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    wstoken: token,
+                    wsfunction: 'core_user_update_user',
+                    moodlewsrestformat: 'json',
+                    userId: userId,
+                    score: score
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Menambahkan alert untuk melihat respons dari server Moodle
+                alert('Respons dari server Moodle: ' + JSON.stringify(data));
+            })
+            .catch(error => {
+                // Menambahkan alert jika ada kesalahan
+                alert('Terjadi kesalahan saat mengirim data ke Moodle: ' + error);
+            });
+    }
+</script>
